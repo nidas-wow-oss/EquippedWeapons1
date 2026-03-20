@@ -1,0 +1,41 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.blizzard.com/wow/ui/ ..\FrameXML\UI.xsd">
+
+    <Frame name="EquippedWeaponsFrame" parent="UIParent" hidden="false">
+        <Size>
+            <AbsDimension x="120" y="50"/>
+        </Size>
+        <Anchors>
+            <Anchor point="CENTER"/>
+        </Anchors>
+    </Frame>
+
+    <Frame name="MainHandIcon" parent="EquippedWeaponsFrame">
+        <Size>
+            <AbsDimension x="35" y="35"/>
+        </Size>
+        <Anchors>
+            <Anchor point="LEFT" relativePoint="LEFT"/>
+        </Anchors>
+    </Frame>
+
+    <Frame name="OffHandIcon" parent="EquippedWeaponsFrame">
+        <Size>
+            <AbsDimension x="35" y="35"/>
+        </Size>
+        <Anchors>
+            <Anchor point="LEFT" relativeTo="MainHandIcon" relativePoint="RIGHT" x="5" y="0"/>
+        </Anchors>
+    </Frame>
+
+    <Frame name="RangedIcon" parent="EquippedWeaponsFrame">
+        <Size>
+            <AbsDimension x="35" y="35"/>
+        </Size>
+        <Anchors>
+            <Anchor point="LEFT" relativeTo="OffHandIcon" relativePoint="RIGHT" x="5" y="0"/>
+        </Anchors>
+    </Frame>
+
+</Ui>
