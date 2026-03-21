@@ -34,8 +34,9 @@ ns.Len = {
     ["Ranged / Relic"]              = "Ranged / Relic",
     -- Profile & Text size
     ["Per-character settings"]      = "Per-character settings",
-    ["Hide chat messages"] = "Hide chat messages",
     ["Hide slot labels"]            = "Hide slot labels",
     ["Show full poison name"]       = "Show full poison name",
+    ["Show poison text"]            = "Show poison text",
+    ["Show poison icon"]            = "Show poison icon",
     ["Text size"]                   = "Text size",
 }

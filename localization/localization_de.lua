@@ -34,7 +34,9 @@ ns.Lde = {
     ["Ranged / Relic"]              = "Fernkampf / Relikt",
     -- Profile & Text size
     ["Per-character settings"]      = "Charakterspezifische Einstellungen",
-    ["Hide chat messages"] = "Chat-Nachrichten ausblenden",
     ["Hide slot labels"]            = "Slot-Bezeichnungen ausblenden",
+    ["Show full poison name"]       = "Vollständigen Giftnamen anzeigen",
+    ["Show poison text"]            = "Gifttext anzeigen",
+    ["Show poison icon"]            = "Giftsymbol anzeigen",
     ["Text size"]                   = "Textgröße",
 }

@@ -34,8 +34,9 @@ ns.Les = {
     ["Ranged / Relic"]              = "A distancia / Reliquia",
     -- Profile & Text size
     ["Per-character settings"]      = "Ajustes por personaje",
-    ["Hide chat messages"] = "Ocultar mensajes del chat",
     ["Hide slot labels"]            = "Ocultar etiquetas de ranura",
     ["Show full poison name"]       = "Mostrar nombre completo del veneno",
+    ["Show poison text"]            = "Mostrar texto de veneno",
+    ["Show poison icon"]            = "Mostrar icono de veneno",
     ["Text size"]                   = "Tamaño de texto",
 }

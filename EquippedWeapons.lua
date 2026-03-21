@@ -25,7 +25,7 @@ local DB_DEFAULTS = {
     xOfs        = -10,
     yOfs        = 10,
     scale       = 1.3,
-    iconSpacing = config.iconSpacing,
+    iconSpacing = 5,
     showEnchants  = true,
     showGems      = true,
     locked      = false,
@@ -134,7 +134,7 @@ local STAT_PATTERNS = {
 
     -- Hit
     { pat = "(%d+) Hit Rating",                  fmt = "%s Hit" },
-    { pat = "(%d+) índice de golpe[^%s]?$",      fmt = "%s Hit" },
+    { pat = "(%d+) índice de golpe%s*$",      fmt = "%s Hit" },
 
     -- Haste
     { pat = "(%d+) Haste Rating",                fmt = "%s Haste" },
@@ -251,9 +251,9 @@ local POISON_DATA = {
 local function GetPoisonIconFromBags(poisonPat)
     if not poisonPat then return nil end
     for bag = 0, 4 do
-        local slots = GetContainerNumSlots(bag)
-        if slots then
-            for slot = 1, slots do
+        local numSlots = GetContainerNumSlots(bag)
+        if numSlots then
+            for slot = 1, numSlots do
                 local link = GetContainerItemLink(bag, slot)
                 if link then
                     local itemName = GetItemInfo(link)
@@ -443,18 +443,33 @@ local function ScanSlotTooltip(slot)
 end
 
 -- ============================================================
--- Utility
+-- Utility: reusable timer pool (no frame leaks)
 -- ============================================================
-local function RunAfterDelay(delay, func)
-    local elapsed = 0
-    local f = CreateFrame("Frame")
-    f:SetScript("OnUpdate", function(self, e)
-        elapsed = elapsed + e
-        if elapsed >= delay then
-            self:SetScript("OnUpdate", nil)
-            func()
+local timerFrame = CreateFrame("Frame")
+local pendingTimers = {}   -- [key] = { remaining, callback }
+
+timerFrame:SetScript("OnUpdate", function(self, elapsed)
+    local any = false
+    for key, t in pairs(pendingTimers) do
+        t.remaining = t.remaining - elapsed
+        if t.remaining <= 0 then
+            pendingTimers[key] = nil
+            t.callback()
+        else
+            any = true
         end
-    end)
+    end
+    if not any then self:Hide() end
+end)
+timerFrame:Hide()
+
+--- Schedule a callback with debounce: same key cancels previous timer.
+-- @param key    string identifier (reuse = debounce)
+-- @param delay  seconds
+-- @param func   callback
+local function RunAfterDelay(key, delay, func)
+    pendingTimers[key] = { remaining = delay, callback = func }
+    timerFrame:Show()
 end
 
 -- ============================================================
@@ -633,7 +648,7 @@ local function UpdateWeaponSlot(slot)
 
     local name, _, rarity = GetItemInfo(link)
     if not name then
-        RunAfterDelay(0.1, function() UpdateWeaponSlot(slot) end)
+        RunAfterDelay("cache_" .. slot, 0.1, function() UpdateWeaponSlot(slot) end)
         return
     end
 
@@ -790,6 +805,16 @@ local function UpdateIconPositions()
     if ns.db.showSlot16 then UpdateWeaponSlot(16) end
     if ns.db.showSlot17 then UpdateWeaponSlot(17) end
     if ns.db.showSlot18 then UpdateWeaponSlot(18) end
+
+    -- Fix #8: Resize parent frame to fit visible children (drag zone match)
+    local n = #visibleSlots
+    local iSize = config.iconSize
+    local gap   = ns.db.iconSpacing * 5
+    if ns.db.verticalLayout then
+        frame:SetSize(iSize, n * iSize + (n - 1) * gap)
+    else
+        frame:SetSize(n * iSize + (n - 1) * gap, iSize)
+    end
 end
 
 -- ============================================================
@@ -874,13 +899,13 @@ frame:SetScript("OnEvent", function(self, event, arg1)
         UpdateTextSize()
         UpdateIconPositions()
         -- Delay first full update so item cache is warm
-        RunAfterDelay(0.3, UpdateAllWeapons)
+        RunAfterDelay("init", 0.3, UpdateAllWeapons)
         return
     end
 
     if event == "PLAYER_ENTERING_WORLD" then
         -- Longer delay on world enter for cache
-        RunAfterDelay(0.5, function()
+        RunAfterDelay("world", 0.5, function()
             UpdateAllWeapons()
             UpdateIconPositions()
         end)
@@ -888,7 +913,7 @@ frame:SetScript("OnEvent", function(self, event, arg1)
     end
 
     if event == "PLAYER_EQUIPMENT_CHANGED" then
-        RunAfterDelay(0.1, function()
+        RunAfterDelay("equip", 0.1, function()
             UpdateAllWeapons()
             UpdateIconPositions()
         end)
@@ -896,11 +921,11 @@ frame:SetScript("OnEvent", function(self, event, arg1)
 
     -- Real-time poison update when bags change or auras change
     if event == "BAG_UPDATE" then
-        RunAfterDelay(0.3, UpdateAllWeapons)
+        RunAfterDelay("refresh", 0.3, UpdateAllWeapons)
     end
 
     if event == "UNIT_AURA" and arg1 == "player" then
-        RunAfterDelay(0.2, UpdateAllWeapons)
+        RunAfterDelay("refresh", 0.2, UpdateAllWeapons)
     end
 end)
 
@@ -920,6 +945,7 @@ SlashCmdList["EQUIPPEDWEAPONS"] = function(msg)
 
     if msg == "reset" then
         for k, v in pairs(DB_DEFAULTS) do ns.db[k] = v end
+        ns.db.classDefaultsApplied = nil   -- allow class defaults on next reload
         local _, pClass = UnitClass("player")
         if pClass == "HUNTER" then
             ns.SetCharProfile(true)

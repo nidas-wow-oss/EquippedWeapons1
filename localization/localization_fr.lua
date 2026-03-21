@@ -34,7 +34,9 @@ ns.Lfr = {
     ["Ranged / Relic"]              = "Distance / Relique",
     -- Profile & Text size
     ["Per-character settings"]      = "Paramètres par personnage",
-    ["Hide chat messages"] = "Masquer les messages du chat",
     ["Hide slot labels"]            = "Masquer les étiquettes d'emplacement",
+    ["Show full poison name"]       = "Afficher le nom complet du poison",
+    ["Show poison text"]            = "Afficher le texte du poison",
+    ["Show poison icon"]            = "Afficher l'icône du poison",
     ["Text size"]                   = "Taille du texte",
 }

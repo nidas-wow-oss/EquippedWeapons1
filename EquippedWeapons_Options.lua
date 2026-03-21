@@ -206,8 +206,8 @@ end
 UpdateLockBoxVisual()
 
 lockBox:SetScript("OnMouseUp", function()
-    ns.db.locked = not ns.db.locked
-    if _G.SetLocked then _G.SetLocked(ns.db.locked) end
+    local newState = not ns.db.locked
+    if _G.SetLocked then _G.SetLocked(newState) end
     UpdateLockBoxVisual()
 end)
 lockBox:SetScript("OnEnter", function()
@@ -358,7 +358,7 @@ end
 
 panel.default = function()
     ns.db.showEnchants     = true
-    ns.db.showGems         = false
+    ns.db.showGems         = true
     ns.db.showClassBorders = false
     ns.db.hideSlotLabels   = false
     ns.db.showSlot16       = true

@@ -34,7 +34,9 @@ ns.Lru = {
     ["Ranged / Relic"]              = "Дальний бой / Реликвия",
     -- Profile & Text size
     ["Per-character settings"]      = "Настройки персонажа",
-    ["Hide chat messages"] = "Скрыть сообщения чата",
     ["Hide slot labels"]            = "Скрыть метки слотов",
+    ["Show full poison name"]       = "Показать полное название яда",
+    ["Show poison text"]            = "Показать текст яда",
+    ["Show poison icon"]            = "Показать значок яда",
     ["Text size"]                   = "Размер текста",
 }
